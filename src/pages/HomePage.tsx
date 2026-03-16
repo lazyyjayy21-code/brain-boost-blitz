@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { CATEGORIES, GAMES, XP_PER_LEVEL, Category } from '@/lib/types';
 import { Flame, Trophy, BarChart3, Shield } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const CATEGORY_BG: Record<string, string> = {
   memory: 'bg-memory/10',
