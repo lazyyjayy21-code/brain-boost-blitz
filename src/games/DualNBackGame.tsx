@@ -21,7 +21,7 @@ export default function DualNBackGame({ onAnswer, onEnd, score, combo, correct, 
   const [step, setStep] = useState(0);
   const [responded, setResponded] = useState(false);
   const n = 2;
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const t = setInterval(() => {
