@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { CATEGORIES, GAMES, XP_PER_LEVEL, Category } from '@/lib/types';
 import { Flame, Trophy, BarChart3, Shield } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const CATEGORY_BG: Record<string, string> = {
   memory: 'bg-memory/10',
@@ -60,7 +61,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <div className="flex items-center gap-1">
             <Flame className="w-5 h-5 text-speed" />
             <span className="font-extrabold tabular-nums">{profile.streak}</span>
