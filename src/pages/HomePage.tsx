@@ -61,7 +61,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <div className="flex items-center gap-1">
             <Flame className="w-5 h-5 text-speed" />
             <span className="font-extrabold tabular-nums">{profile.streak}</span>
