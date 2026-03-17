@@ -3,7 +3,7 @@ import { DuelState, DUEL_OPPONENTS } from '@/lib/types';
 
 export function useDuel() {
   const [duel, setDuel] = useState<DuelState | null>(null);
-  const botInterval = useRef<NodeJS.Timeout>();
+  const botInterval = useRef<ReturnType<typeof setInterval>>();
 
   const startDuel = useCallback((gameId: string) => {
     const opponent = DUEL_OPPONENTS[Math.floor(Math.random() * DUEL_OPPONENTS.length)];
