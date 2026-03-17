@@ -19,7 +19,7 @@ export default function GameHUD({ score, combo, timeLeft, correct, wrong, catego
           key={score}
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 0.2 }}
-          className="text-xl font-extrabold tabular-nums"
+          className="text-xl font-display font-bold tabular-nums"
         >
           {score}
         </motion.div>
@@ -28,7 +28,8 @@ export default function GameHUD({ score, combo, timeLeft, correct, wrong, catego
             key={combo}
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 0.3 }}
-            className="text-sm font-bold px-2 py-0.5 rounded-xl bg-logic/20 text-logic"
+            className="text-sm font-display font-bold px-2 py-0.5 rounded-xl bg-speed/20 text-speed"
+            style={{ boxShadow: '0 0 10px hsl(25 95% 55% / 0.3)' }}
           >
             x{multiplier}
           </motion.div>
@@ -37,14 +38,14 @@ export default function GameHUD({ score, combo, timeLeft, correct, wrong, catego
 
       <div className="flex items-center gap-3 text-sm">
         {timeLeft !== undefined && (
-          <div className="font-bold tabular-nums text-muted-foreground">
+          <div className="font-display font-bold tabular-nums text-muted-foreground">
             {timeLeft}s
           </div>
         )}
         <div className="flex items-center gap-1">
-          <span className="text-language font-semibold">{correct}</span>
+          <span className="text-language font-display font-semibold">{correct}</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-destructive font-semibold">{wrong}</span>
+          <span className="text-destructive font-display font-semibold">{wrong}</span>
         </div>
       </div>
     </div>
