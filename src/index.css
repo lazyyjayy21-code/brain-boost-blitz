@@ -2,102 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 25% 10%;
+    --background: 225 30% 8%;
+    --foreground: 210 40% 92%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card: 225 25% 12%;
+    --card-foreground: 210 40% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover: 225 25% 12%;
+    --popover-foreground: 210 40% 92%;
 
-    --primary: 225 80% 60%;
+    --primary: 220 90% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 220 25% 15%;
+    --secondary: 225 20% 18%;
+    --secondary-foreground: 210 40% 90%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 225 20% 16%;
+    --muted-foreground: 215 20% 55%;
 
-    --accent: 210 20% 94%;
-    --accent-foreground: 220 25% 10%;
+    --accent: 225 20% 18%;
+    --accent-foreground: 210 40% 92%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 225 80% 60%;
+    --border: 225 20% 18%;
+    --input: 225 20% 18%;
+    --ring: 220 90% 60%;
 
     --radius: 1rem;
 
-    /* Category colors */
-    --memory: 225 80% 60%;
-    --logic: 35 90% 50%;
-    --speed: 350 80% 60%;
-    --language: 150 80% 40%;
-    --spatial: 270 70% 60%;
-    --focus: 190 90% 45%;
+    /* NeuroBattle Category Neon Colors */
+    --memory: 270 80% 65%;
+    --logic: 220 90% 60%;
+    --speed: 25 95% 55%;
+    --language: 150 80% 45%;
+    --spatial: 175 80% 45%;
+    --emotional: 340 80% 60%;
+
+    /* Neon glows */
+    --glow-memory: 0 0 20px hsl(270 80% 65% / 0.4);
+    --glow-logic: 0 0 20px hsl(220 90% 60% / 0.4);
+    --glow-speed: 0 0 20px hsl(25 95% 55% / 0.4);
+    --glow-language: 0 0 20px hsl(150 80% 45% / 0.4);
+    --glow-spatial: 0 0 20px hsl(175 80% 45% / 0.4);
+    --glow-emotional: 0 0 20px hsl(340 80% 60% / 0.4);
 
     /* Shadows */
-    --shadow-card: 0 0 0 1px rgba(0,0,0,0.05), 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.05), 0 8px 16px -4px rgba(0,0,0,0.1);
+    --shadow-card: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 12px -2px rgba(0,0,0,0.4);
+    --shadow-elevated: 0 0 0 1px rgba(255,255,255,0.08), 0 8px 24px -4px rgba(0,0,0,0.5);
+    --shadow-neon: 0 0 30px -5px;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 225 30% 8%;
+    --sidebar-foreground: 210 40% 92%;
+    --sidebar-primary: 220 90% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 225 20% 16%;
+    --sidebar-accent-foreground: 210 40% 92%;
+    --sidebar-border: 225 20% 18%;
+    --sidebar-ring: 220 90% 60%;
   }
 
-  .dark {
-    --background: 220 25% 6%;
-    --foreground: 210 40% 90%;
-
-    --card: 220 25% 9%;
-    --card-foreground: 210 40% 90%;
-
-    --popover: 220 25% 9%;
-    --popover-foreground: 210 40% 90%;
-
-    --primary: 225 80% 60%;
+  /* Light mode override - NeuroBattle is dark-first but supports light */
+  .light {
+    --background: 220 20% 96%;
+    --foreground: 225 30% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 225 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 30% 10%;
+    --primary: 220 90% 55%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 210 40% 90%;
-
-    --muted: 220 20% 15%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 220 20% 15%;
-    --accent-foreground: 210 40% 90%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 225 80% 60%;
-
-    --shadow-card: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 6px -1px rgba(0,0,0,0.3);
-    --shadow-elevated: 0 0 0 1px rgba(255,255,255,0.05), 0 8px 16px -4px rgba(0,0,0,0.4);
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 225 25% 15%;
+    --muted: 220 15% 92%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 220 15% 92%;
+    --accent-foreground: 225 30% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 220 90% 55%;
+    --shadow-card: 0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px -2px rgba(0,0,0,0.1);
+    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.06), 0 8px 16px -4px rgba(0,0,0,0.12);
   }
 }
 
@@ -108,11 +100,19 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
   }
 }
 
 @layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
@@ -121,24 +121,49 @@
     text-wrap: balance;
   }
 
-  .category-memory { color: hsl(var(--memory)); }
-  .category-logic { color: hsl(var(--logic)); }
-  .category-speed { color: hsl(var(--speed)); }
-  .category-language { color: hsl(var(--language)); }
-  .category-spatial { color: hsl(var(--spatial)); }
-  .category-focus { color: hsl(var(--focus)); }
+  /* Category text colors */
+  .text-memory { color: hsl(var(--memory)); }
+  .text-logic { color: hsl(var(--logic)); }
+  .text-speed { color: hsl(var(--speed)); }
+  .text-language { color: hsl(var(--language)); }
+  .text-spatial { color: hsl(var(--spatial)); }
+  .text-emotional { color: hsl(var(--emotional)); }
 
+  /* Category bg colors */
   .bg-memory { background-color: hsl(var(--memory)); }
   .bg-logic { background-color: hsl(var(--logic)); }
   .bg-speed { background-color: hsl(var(--speed)); }
   .bg-language { background-color: hsl(var(--language)); }
   .bg-spatial { background-color: hsl(var(--spatial)); }
-  .bg-focus { background-color: hsl(var(--focus)); }
+  .bg-emotional { background-color: hsl(var(--emotional)); }
 
+  /* Category bg with opacity */
   .bg-memory\/10 { background-color: hsl(var(--memory) / 0.1); }
   .bg-logic\/10 { background-color: hsl(var(--logic) / 0.1); }
   .bg-speed\/10 { background-color: hsl(var(--speed) / 0.1); }
   .bg-language\/10 { background-color: hsl(var(--language) / 0.1); }
   .bg-spatial\/10 { background-color: hsl(var(--spatial) / 0.1); }
-  .bg-focus\/10 { background-color: hsl(var(--focus) / 0.1); }
+  .bg-emotional\/10 { background-color: hsl(var(--emotional) / 0.1); }
+
+  .bg-memory\/20 { background-color: hsl(var(--memory) / 0.2); }
+  .bg-logic\/20 { background-color: hsl(var(--logic) / 0.2); }
+  .bg-speed\/20 { background-color: hsl(var(--speed) / 0.2); }
+  .bg-language\/20 { background-color: hsl(var(--language) / 0.2); }
+  .bg-spatial\/20 { background-color: hsl(var(--spatial) / 0.2); }
+  .bg-emotional\/20 { background-color: hsl(var(--emotional) / 0.2); }
+
+  /* Neon glow effects */
+  .glow-memory { box-shadow: var(--glow-memory); }
+  .glow-logic { box-shadow: var(--glow-logic); }
+  .glow-speed { box-shadow: var(--glow-speed); }
+  .glow-language { box-shadow: var(--glow-language); }
+  .glow-spatial { box-shadow: var(--glow-spatial); }
+  .glow-emotional { box-shadow: var(--glow-emotional); }
+
+  /* Frosted glass */
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
 }

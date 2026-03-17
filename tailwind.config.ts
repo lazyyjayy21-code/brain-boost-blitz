@@ -8,13 +8,12 @@ export default {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
       fontFamily: {
-        sans: ["Plus Jakarta Sans", "sans-serif"],
+        sans: ["DM Sans", "sans-serif"],
+        display: ["Space Grotesk", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -55,7 +54,7 @@ export default {
         speed: "hsl(var(--speed))",
         language: "hsl(var(--language))",
         spatial: "hsl(var(--spatial))",
-        focus: "hsl(var(--focus))",
+        emotional: "hsl(var(--emotional))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -77,6 +76,7 @@ export default {
       boxShadow: {
         card: "var(--shadow-card)",
         elevated: "var(--shadow-elevated)",
+        neon: "var(--shadow-neon)",
       },
       keyframes: {
         "accordion-down": {
@@ -96,7 +96,7 @@ export default {
           "50%": { transform: "scale(1.2)" },
           "100%": { transform: "scale(1)" },
         },
-        "shake": {
+        shake: {
           "0%, 100%": { transform: "translateX(0)" },
           "25%": { transform: "translateX(-10px)" },
           "75%": { transform: "translateX(10px)" },
@@ -105,14 +105,29 @@ export default {
           "0%": { transform: "scale(1)", opacity: "1" },
           "100%": { transform: "scale(1.5)", opacity: "0" },
         },
+        "pulse-neon": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        "slide-down": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "scale-pop": "scale-pop 0.3s ease-out",
-        "shake": "shake 0.3s ease-out",
+        shake: "shake 0.3s ease-out",
         "pulse-ring": "pulse-ring 1s ease-out infinite",
+        "pulse-neon": "pulse-neon 2s ease-in-out infinite",
+        "slide-down": "slide-down 0.5s ease-out",
+        float: "float 3s ease-in-out infinite",
       },
     },
   },

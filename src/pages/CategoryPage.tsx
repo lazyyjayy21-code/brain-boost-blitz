@@ -6,11 +6,11 @@ import { ArrowLeft } from 'lucide-react';
 
 const CATEGORY_BG: Record<string, string> = {
   memory: 'bg-memory/10', logic: 'bg-logic/10', speed: 'bg-speed/10',
-  language: 'bg-language/10', spatial: 'bg-spatial/10', focus: 'bg-focus/10',
+  language: 'bg-language/10', spatial: 'bg-spatial/10', emotional: 'bg-emotional/10',
 };
 const CATEGORY_TEXT: Record<string, string> = {
   memory: 'text-memory', logic: 'text-logic', speed: 'text-speed',
-  language: 'text-language', spatial: 'text-spatial', focus: 'text-focus',
+  language: 'text-language', spatial: 'text-spatial', emotional: 'text-emotional',
 };
 
 export default function CategoryPage() {
@@ -26,7 +26,9 @@ export default function CategoryPage() {
         <ArrowLeft className="w-5 h-5" /> Back
       </button>
 
-      <h1 className={`text-2xl font-extrabold mb-6 ${CATEGORY_TEXT[categoryId || '']}`}>{label}</h1>
+      <h1 className={`text-2xl font-display font-bold mb-6 ${CATEGORY_TEXT[categoryId || '']}`}>
+        {categoryId === 'emotional' ? 'Emotional IQ' : label}
+      </h1>
 
       <div className="flex flex-col gap-3">
         {games.map(game => {
@@ -37,16 +39,17 @@ export default function CategoryPage() {
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate(`/game/${game.id}`)}
               className={`rounded-3xl p-5 shadow-card text-left flex items-center gap-4 ${CATEGORY_BG[game.category]}`}
+              style={{ boxShadow: `0 0 15px hsl(var(--${game.category}) / 0.1)` }}
             >
               <span className="text-3xl">{game.icon}</span>
               <div className="flex-1">
-                <div className="font-bold">{game.name}</div>
+                <div className="font-display font-bold">{game.name}</div>
                 <div className="text-sm text-muted-foreground">{game.description}</div>
               </div>
               {highScore > 0 && (
                 <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Best</div>
-                  <div className="font-extrabold tabular-nums">{highScore}</div>
+                  <div className="text-xs text-muted-foreground font-display">Best</div>
+                  <div className="font-display font-bold tabular-nums">{highScore}</div>
                 </div>
               )}
             </motion.button>
