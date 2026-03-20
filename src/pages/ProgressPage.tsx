@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Zap, Trophy, BarChart3 } from 'lucide-react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { CATEGORIES, BRAIN_TYPES } from '@/lib/types';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from 'recharts';
 
 export default function ProgressPage() {
   const navigate = useNavigate();
@@ -29,13 +30,13 @@ export default function ProgressPage() {
     score: g.score,
   }));
 
-  // Mood insights
+  // Mood vs Performance (Brain Weather)
   const moodPerformance: Record<string, { total: number; count: number }> = {};
-  profile.moodHistory.forEach((m, i) => {
+  profile.moodHistory.forEach(m => {
     const nearbyGames = profile.gameHistory.filter(g => {
       const gDate = new Date(g.date).getTime();
       const mDate = new Date(m.date).getTime();
-      return Math.abs(gDate - mDate) < 3600000; // within 1 hour
+      return Math.abs(gDate - mDate) < 3600000;
     });
     if (nearbyGames.length > 0) {
       if (!moodPerformance[m.mood]) moodPerformance[m.mood] = { total: 0, count: 0 };
@@ -46,6 +47,37 @@ export default function ProgressPage() {
     }
   });
 
+  const moodColors: Record<string, string> = {
+    tired: 'hsl(215,20%,55%)',
+    anxious: 'hsl(25,95%,55%)',
+    calm: 'hsl(220,90%,60%)',
+    happy: 'hsl(150,80%,45%)',
+    'fired-up': 'hsl(340,80%,60%)',
+    competitive: 'hsl(25,95%,55%)',
+  };
+
+  const moodBarData = Object.entries(moodPerformance).map(([mood, data]) => ({
+    mood: mood.charAt(0).toUpperCase() + mood.slice(1),
+    avg: Math.round(data.total / data.count),
+    fill: moodColors[mood] || 'hsl(270,80%,65%)',
+  }));
+
+  // Day-of-week insights
+  const dayScores: Record<string, { total: number; count: number }> = {};
+  profile.gameHistory.forEach(g => {
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(g.date).getDay()];
+    if (!dayScores[day]) dayScores[day] = { total: 0, count: 0 };
+    dayScores[day].total += g.score;
+    dayScores[day].count += 1;
+  });
+
+  const bestDay = Object.entries(dayScores).sort((a, b) => (b[1].total / b[1].count) - (a[1].total / a[1].count))[0];
+
+  const item = {
+    hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
+    show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+  };
+
   return (
     <div className="max-w-md mx-auto px-4 py-4 pb-24">
       <button onClick={() => navigate('/')} className="flex items-center gap-2 text-muted-foreground mb-4">
@@ -55,13 +87,15 @@ export default function ProgressPage() {
       <h1 className="text-2xl font-display font-bold mb-6">Progress</h1>
 
       {/* Brain Type Card */}
-      <div className="bg-card rounded-3xl shadow-card p-5 mb-6 text-center"
+      <motion.div
+        variants={item} initial="hidden" animate="show"
+        className="bg-card rounded-3xl shadow-card p-5 mb-6 text-center"
         style={{ boxShadow: '0 0 30px hsl(270 80% 65% / 0.15)' }}
       >
         <div className="text-4xl mb-2">🧠</div>
         <div className="font-display font-bold text-lg text-memory">{brainType.label}</div>
         <div className="text-sm text-muted-foreground">{brainType.description}</div>
-      </div>
+      </motion.div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-6">
@@ -79,8 +113,9 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      {/* Radar Chart - Brain Card Style */}
-      <div className="bg-card rounded-3xl shadow-card p-4 mb-6"
+      {/* Radar Chart */}
+      <motion.div variants={item} initial="hidden" animate="show"
+        className="bg-card rounded-3xl shadow-card p-4 mb-6"
         style={{ boxShadow: '0 0 20px hsl(220 90% 60% / 0.1)' }}
       >
         <h2 className="font-display font-bold text-sm mb-2">Brain Radar</h2>
@@ -97,10 +132,12 @@ export default function ProgressPage() {
             Play some games to see your brain radar!
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Score Trend */}
-      <div className="bg-card rounded-3xl shadow-card p-4 mb-6">
+      <motion.div variants={item} initial="hidden" animate="show"
+        className="bg-card rounded-3xl shadow-card p-4 mb-6"
+      >
         <h2 className="font-display font-bold text-sm mb-2">Recent Scores</h2>
         {recentGames.length > 0 ? (
           <ResponsiveContainer width="100%" height={200}>
@@ -123,11 +160,48 @@ export default function ProgressPage() {
             No games played yet
           </div>
         )}
-      </div>
+      </motion.div>
 
-      {/* Mood vs Performance */}
-      {Object.keys(moodPerformance).length > 0 && (
-        <div className="bg-card rounded-3xl shadow-card p-4">
+      {/* Brain Weather — Mood vs Performance */}
+      {profile.moodHistory.length >= 7 && moodBarData.length > 0 && (
+        <motion.div variants={item} initial="hidden" animate="show"
+          className="bg-card rounded-3xl shadow-card p-4 mb-6"
+          style={{ boxShadow: '0 0 20px hsl(340 80% 60% / 0.1)' }}
+        >
+          <h2 className="font-display font-bold text-sm mb-1">🌤️ Brain Weather</h2>
+          <p className="text-xs text-muted-foreground mb-3">How your mood affects your performance</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={moodBarData}>
+              <XAxis dataKey="mood" tick={{ fontSize: 10, fill: 'hsl(215,20%,55%)' }} stroke="hsl(225,20%,25%)" />
+              <YAxis tick={{ fontSize: 10 }} stroke="hsl(225,20%,25%)" />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(225,25%,12%)',
+                  border: '1px solid hsl(225,20%,20%)',
+                  borderRadius: '12px',
+                  color: 'hsl(210,40%,92%)',
+                }}
+              />
+              <Bar dataKey="avg" radius={[6, 6, 0, 0]}>
+                {moodBarData.map((entry, i) => (
+                  <Cell key={i} fill={entry.fill} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          {bestDay && (
+            <p className="text-xs text-muted-foreground mt-2 text-center italic">
+              "You score {Math.round(((bestDay[1].total / bestDay[1].count) / (profile.gameHistory.reduce((s, g) => s + g.score, 0) / profile.gameHistory.length) - 1) * 100)}% higher on {bestDay[0]}s"
+            </p>
+          )}
+        </motion.div>
+      )}
+
+      {/* Mood vs Performance (basic bars for < 7 days) */}
+      {profile.moodHistory.length < 7 && Object.keys(moodPerformance).length > 0 && (
+        <motion.div variants={item} initial="hidden" animate="show"
+          className="bg-card rounded-3xl shadow-card p-4"
+        >
           <h2 className="font-display font-bold text-sm mb-3">Mood vs Performance</h2>
           <div className="flex flex-col gap-2">
             {Object.entries(moodPerformance).map(([mood, data]) => (
@@ -145,8 +219,29 @@ export default function ProgressPage() {
               </div>
             ))}
           </div>
-        </div>
+          <p className="text-xs text-muted-foreground mt-3 text-center italic">
+            Check in {7 - profile.moodHistory.length} more times to unlock Brain Weather insights
+          </p>
+        </motion.div>
       )}
+
+      {/* Bottom Nav */}
+      <div className="fixed bottom-0 left-0 right-0 glass border-t border-border/50">
+        <div className="max-w-md mx-auto flex justify-around py-3">
+          <button onClick={() => navigate('/')} className="flex flex-col items-center gap-0.5 text-muted-foreground">
+            <Zap className="w-5 h-5" />
+            <span className="text-xs font-display font-semibold">Home</span>
+          </button>
+          <button onClick={() => navigate('/leaderboard')} className="flex flex-col items-center gap-0.5 text-muted-foreground">
+            <Trophy className="w-5 h-5" />
+            <span className="text-xs font-display font-semibold">Rank</span>
+          </button>
+          <button onClick={() => navigate('/progress')} className="flex flex-col items-center gap-0.5 text-primary">
+            <BarChart3 className="w-5 h-5" />
+            <span className="text-xs font-display font-semibold">Stats</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
