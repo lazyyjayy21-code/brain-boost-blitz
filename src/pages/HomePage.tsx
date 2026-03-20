@@ -3,9 +3,16 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useMood } from '@/hooks/useMood';
-import { CATEGORIES, GAMES, MOODS, BRAIN_TYPES, XP_PER_LEVEL, Category } from '@/lib/types';
+import { CATEGORIES, GAMES, BRAIN_TYPES, Category } from '@/lib/types';
 import { Flame, Trophy, BarChart3, Shield, Swords, Zap } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
+
+const MOOD_SCALE = [
+  { emoji: '😴', label: 'Tired', value: 'tired' },
+  { emoji: '😐', label: 'Meh', value: 'anxious' },
+  { emoji: '🙂', label: 'Good', value: 'calm' },
+  { emoji: '😊', label: 'Happy', value: 'happy' },
+  { emoji: '🔥', label: 'On Fire', value: 'fired-up' },
+];
 
 const CATEGORY_BG: Record<string, string> = {
   memory: 'bg-memory/10', logic: 'bg-logic/10', speed: 'bg-speed/10',
@@ -15,16 +22,20 @@ const CATEGORY_TEXT: Record<string, string> = {
   memory: 'text-memory', logic: 'text-logic', speed: 'text-speed',
   language: 'text-language', spatial: 'text-spatial', emotional: 'text-emotional',
 };
+const CATEGORY_BORDER: Record<string, string> = {
+  memory: 'border-memory/40', logic: 'border-logic/40', speed: 'border-speed/40',
+  language: 'border-language/40', spatial: 'border-spatial/40', emotional: 'border-emotional/40',
+};
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { profile, xpForNextLevel, xpProgress, addMoodEntry } = useUserProfile();
   const { currentMood, moodChecked, selectMood, getRecommendedGame, getMoodInsight } = useMood();
   const [showMoodCheck, setShowMoodCheck] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  const dayIndex = new Date().getDate() % GAMES.length;
-  const dailyGame = GAMES[dayIndex];
   const brainType = BRAIN_TYPES[profile.brainType] || BRAIN_TYPES.strategist;
+  const filteredGames = selectedCategory ? GAMES.filter(g => g.category === selectedCategory) : GAMES;
 
   // Weekly calendar
   const weekDays: { date: string; label: string; active: boolean }[] = [];
@@ -41,21 +52,21 @@ export default function HomePage() {
 
   const handleMoodSelect = (moodValue: string) => {
     selectMood(moodValue);
-    const moodObj = MOODS.find(m => m.value === moodValue)!;
+    const moodObj = MOOD_SCALE.find(m => m.value === moodValue)!;
     addMoodEntry({
       date: new Date().toISOString(),
       mood: moodValue,
       emoji: moodObj.emoji,
-      energy: 3,
+      energy: MOOD_SCALE.indexOf(moodObj) + 1,
     });
     setShowMoodCheck(false);
-    // Navigate to recommended game
-    const game = getRecommendedGame();
-    navigate(`/game/${game.id}`);
   };
 
-  const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-  const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
+  const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
+  const item = {
+    hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
+    show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
+  };
 
   return (
     <div className="max-w-md mx-auto px-4 pb-28">
@@ -63,8 +74,8 @@ export default function HomePage() {
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center gap-3">
           <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
+            animate={{ rotate: [0, 3, -3, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             className="w-11 h-11 rounded-2xl bg-primary/20 flex items-center justify-center text-xl"
             style={{ boxShadow: '0 0 20px hsl(220 90% 60% / 0.2)' }}
           >
@@ -77,7 +88,9 @@ export default function HomePage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <button onClick={() => navigate('/leaderboard')} className="w-9 h-9 rounded-xl bg-card shadow-card flex items-center justify-center">
+            <Trophy className="w-4 h-4 text-speed" />
+          </button>
           <div className="flex items-center gap-1 bg-speed/10 px-2.5 py-1 rounded-xl">
             <Flame className="w-4 h-4 text-speed" />
             <span className="font-display font-bold tabular-nums text-speed text-sm">{profile.streak}</span>
@@ -91,8 +104,20 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Logo */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-4"
+      >
+        <h1 className="text-3xl font-display font-bold tracking-tight" style={{ lineHeight: 1.1 }}>
+          <span className="text-primary">Neuro</span><span className="text-foreground">Battle</span>
+        </h1>
+        <p className="text-xs text-muted-foreground mt-0.5 font-display">Train your brain. Battle your limits.</p>
+      </motion.div>
+
       {/* XP Bar */}
-      <div className="mb-5">
+      <div className="mb-4">
         <div className="flex justify-between text-xs text-muted-foreground mb-1 font-display">
           <span>{xpProgress} / {xpForNextLevel} XP</span>
           <span>Lv {profile.level}</span>
@@ -108,35 +133,37 @@ export default function HomePage() {
       </div>
 
       {/* Weekly Heatmap */}
-      <div className="flex gap-2 mb-6 justify-center">
+      <div className="flex gap-2 mb-5 justify-center">
         {weekDays.map(d => (
           <div key={d.date} className="flex flex-col items-center gap-1">
-            <span className="text-xs text-muted-foreground font-display">{d.label}</span>
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold ${
-              d.active ? 'bg-language/20 text-language glow-language' : 'bg-muted text-muted-foreground'
-            }`}>
+            <span className="text-[10px] text-muted-foreground font-display">{d.label}</span>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-colors ${
+              d.active ? 'bg-language/20 text-language' : 'bg-muted text-muted-foreground'
+            }`}
+              style={d.active ? { boxShadow: '0 0 8px hsl(150 80% 45% / 0.3)' } : undefined}
+            >
               {d.active ? '✓' : '·'}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Mood Check-in Button */}
+      {/* Mood Check-in */}
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => setShowMoodCheck(true)}
-        className="w-full rounded-3xl p-4 mb-4 glass text-center"
-        style={{ boxShadow: '0 0 25px hsl(340 80% 60% / 0.15)' }}
+        className="w-full rounded-2xl p-3.5 mb-4 glass text-center"
+        style={{ boxShadow: '0 0 20px hsl(340 80% 60% / 0.12)' }}
       >
         <div className="flex items-center justify-center gap-2">
           <Zap className="w-4 h-4 text-emotional" />
-          <span className="font-display font-bold text-sm text-emotional">
-            {moodChecked ? `Feeling ${currentMood} — ${getMoodInsight()}` : 'How are you feeling? Start a mood session →'}
+          <span className="font-display font-semibold text-sm text-emotional">
+            {moodChecked ? `Feeling ${currentMood} — ${getMoodInsight()}` : 'How are you feeling? Tap to check in →'}
           </span>
         </div>
       </motion.button>
 
-      {/* Mood Check Modal */}
+      {/* Mood Check Modal - 5 emoji scale */}
       <AnimatePresence>
         {showMoodCheck && (
           <motion.div
@@ -147,24 +174,26 @@ export default function HomePage() {
             onClick={() => setShowMoodCheck(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.92, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
+              exit={{ scale: 0.92, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="bg-card rounded-3xl p-6 shadow-elevated w-full max-w-sm"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-display font-bold text-lg mb-1">How do you feel right now?</h3>
-              <p className="text-sm text-muted-foreground mb-4">AI will pick the perfect game for your mood</p>
-              <div className="grid grid-cols-3 gap-3">
-                {MOODS.map(m => (
+              <h3 className="font-display font-bold text-lg mb-1 text-center">How do you feel?</h3>
+              <p className="text-sm text-muted-foreground mb-5 text-center">AI will pick the perfect game for your mood</p>
+              <div className="flex justify-between px-2">
+                {MOOD_SCALE.map((m, i) => (
                   <motion.button
                     key={m.value}
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.85 }}
+                    whileHover={{ y: -4 }}
                     onClick={() => handleMoodSelect(m.value)}
-                    className="flex flex-col items-center gap-1 p-3 rounded-2xl bg-muted hover:bg-emotional/10 transition-colors"
+                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl hover:bg-emotional/10 transition-colors"
                   >
-                    <span className="text-2xl">{m.emoji}</span>
-                    <span className="text-xs font-display font-medium">{m.label}</span>
+                    <span className="text-3xl">{m.emoji}</span>
+                    <span className="text-[10px] font-display font-medium text-muted-foreground">{m.label}</span>
                   </motion.button>
                 ))}
               </div>
@@ -173,59 +202,85 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      {/* Daily Challenge */}
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        onClick={() => navigate(`/game/${dailyGame.id}`)}
-        className={`w-full rounded-3xl p-6 shadow-elevated mb-4 text-left ${CATEGORY_BG[dailyGame.category]}`}
-        style={{ boxShadow: `0 0 30px hsl(var(--${dailyGame.category}) / 0.15)` }}
-      >
-        <div className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider mb-1">⚡ Daily Challenge</div>
-        <div className="flex items-center gap-3">
-          <span className="text-4xl">{dailyGame.icon}</span>
-          <div>
-            <div className={`text-xl font-display font-bold ${CATEGORY_TEXT[dailyGame.category]}`}>{dailyGame.name}</div>
-            <div className="text-sm text-muted-foreground">{dailyGame.description}</div>
-          </div>
-        </div>
-      </motion.button>
-
-      {/* Quick Duel Button */}
+      {/* Live Duel Banner */}
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => {
           const randomGame = GAMES[Math.floor(Math.random() * GAMES.length)];
           navigate(`/game/${randomGame.id}`);
         }}
-        className="w-full rounded-3xl p-4 mb-6 text-left flex items-center gap-3"
+        className="w-full rounded-2xl p-4 mb-5 text-left flex items-center gap-3 overflow-hidden relative"
         style={{
-          background: 'linear-gradient(135deg, hsl(25 95% 55% / 0.15), hsl(340 80% 60% / 0.15))',
-          boxShadow: '0 0 25px hsl(25 95% 55% / 0.1)',
+          background: 'linear-gradient(135deg, hsl(270 60% 30%), hsl(260 70% 20%))',
+          boxShadow: '0 0 30px hsl(270 80% 65% / 0.2)',
         }}
       >
-        <Swords className="w-8 h-8 text-speed" />
-        <div>
-          <div className="font-display font-bold text-speed">Quick Duel</div>
-          <div className="text-xs text-muted-foreground">Challenge a random opponent</div>
+        <div className="absolute inset-0 opacity-20"
+          style={{ background: 'radial-gradient(circle at 80% 20%, hsl(270,80%,65%), transparent 50%)' }}
+        />
+        <Swords className="w-8 h-8 text-memory relative z-10" />
+        <div className="relative z-10 flex-1">
+          <div className="font-display font-bold text-white">Duel! ⚡</div>
+          <div className="text-xs text-white/60">Challenge a random opponent in real-time</div>
         </div>
+        <motion.div
+          animate={{ x: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-white/80 font-display font-bold text-sm relative z-10"
+        >
+          GO →
+        </motion.div>
       </motion.button>
 
-      {/* Category Grid */}
+      {/* Category Filter Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+        <button
+          onClick={() => setSelectedCategory(null)}
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-display font-semibold transition-all ${
+            !selectedCategory ? 'bg-primary text-primary-foreground shadow-card' : 'bg-muted text-muted-foreground'
+          }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+            className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-display font-semibold transition-all ${
+              selectedCategory === cat.id
+                ? `${CATEGORY_BG[cat.id]} ${CATEGORY_TEXT[cat.id]} border ${CATEGORY_BORDER[cat.id]}`
+                : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            {cat.id === 'emotional' ? 'Emotional IQ' : cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Game Grid — 2 columns, all 10 games */}
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
-        {CATEGORIES.map(cat => {
-          const games = GAMES.filter(g => g.category === cat.id);
+        {filteredGames.map(game => {
+          const highScore = profile.gameHighScores[game.id] || 0;
           return (
             <motion.button
-              key={cat.id}
+              key={game.id}
               variants={item}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(`/category/${cat.id}`)}
-              className={`rounded-3xl p-4 shadow-card text-left ${CATEGORY_BG[cat.id]}`}
-              style={{ boxShadow: `0 0 15px hsl(var(--${cat.id}) / 0.1)` }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate(`/game/${game.id}`)}
+              className={`rounded-2xl p-4 text-left relative overflow-hidden ${CATEGORY_BG[game.category]}`}
+              style={{ boxShadow: `0 0 12px hsl(var(--${game.category}) / 0.1)` }}
             >
-              <div className="text-2xl mb-2">{games[0]?.icon}</div>
-              <div className={`font-display font-bold ${CATEGORY_TEXT[cat.id]}`}>{cat.label}</div>
-              <div className="text-xs text-muted-foreground">{games.length} games</div>
+              <span className="text-3xl block mb-2">{game.icon}</span>
+              <div className="font-display font-bold text-sm leading-tight mb-0.5">{game.name}</div>
+              <span className={`inline-block text-[10px] font-display font-semibold px-1.5 py-0.5 rounded-md ${CATEGORY_BG[game.category]} ${CATEGORY_TEXT[game.category]} mb-1`}>
+                {game.category === 'emotional' ? 'Emotional IQ' : game.category.charAt(0).toUpperCase() + game.category.slice(1)}
+              </span>
+              <div className="text-[11px] text-muted-foreground leading-snug">{game.description}</div>
+              {highScore > 0 && (
+                <div className="mt-2 text-[10px] font-display font-bold tabular-nums text-muted-foreground">
+                  🏆 {highScore}
+                </div>
+              )}
             </motion.button>
           );
         })}
