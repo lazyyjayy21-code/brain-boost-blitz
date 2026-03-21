@@ -36,9 +36,13 @@ const GAME_COMPONENTS: Record<string, React.ComponentType<any>> = {
   'emotion-codebreaker': EmotionCodebreakerGame,
 };
 
-const CATEGORY_TEXT: Record<string, string> = {
-  memory: 'text-memory', logic: 'text-logic', speed: 'text-speed',
-  language: 'text-language', spatial: 'text-spatial', emotional: 'text-emotional',
+const CATEGORY_COLORS: Record<string, string> = {
+  memory: 'hsl(280, 60%, 55%)',
+  logic: 'hsl(220, 70%, 55%)',
+  speed: 'hsl(18, 100%, 60%)',
+  language: 'hsl(142, 60%, 42%)',
+  spatial: 'hsl(175, 60%, 42%)',
+  emotional: 'hsl(340, 75%, 55%)',
 };
 
 export default function GamePage() {
@@ -65,13 +69,11 @@ export default function GamePage() {
   const handleEnd = useCallback(() => {
     endGame();
     const elapsed = Date.now() - state.startTime;
-
     let duelResult: 'win' | 'loss' | 'draw' | undefined;
     if (isDuelMode) {
       duelResult = endDuel(state.score);
       recordDuel(duelResult === 'win');
     }
-
     if (gameDef) {
       addGameResult({
         gameId: gameDef.id,
@@ -94,41 +96,41 @@ export default function GamePage() {
   }, [submitAnswer, triggerFeedback, isDuelMode, updatePlayerScore, state.score]);
 
   if (!gameDef || !GameComp) {
-    return <div className="p-8 text-center font-display">Game not found</div>;
+    return <div className="p-8 text-center font-semibold text-foreground">Game not found</div>;
   }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      className="max-w-md mx-auto px-4 py-4 min-h-screen flex flex-col"
+      className="max-w-md mx-auto px-5 py-6 min-h-screen flex flex-col bg-background"
     >
       <RedFlashOverlay />
 
       {phase === 'intro' && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="flex-1 flex flex-col items-center justify-center gap-6"
         >
-          <button onClick={() => navigate(-1)} className="self-start flex items-center gap-2 text-muted-foreground">
+          <button onClick={() => navigate(-1)} className="self-start flex items-center gap-2 text-muted-foreground text-sm font-medium">
             <ArrowLeft className="w-5 h-5" /> Back
           </button>
           <motion.span
             className="text-7xl"
-            animate={{ y: [0, -8, 0] }}
+            animate={{ y: [0, -6, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             {gameDef.icon}
           </motion.span>
-          <h1 className={`text-2xl font-display font-bold ${CATEGORY_TEXT[gameDef.category]}`}>{gameDef.name}</h1>
-          <p className="text-muted-foreground text-center max-w-[280px]">{gameDef.description}</p>
+          <h1 className="text-2xl font-extrabold text-foreground">{gameDef.name}</h1>
+          <p className="text-muted-foreground text-center max-w-[280px] text-[15px]">{gameDef.description}</p>
           {highScore > 0 && (
-            <div className="bg-card rounded-2xl px-6 py-3 shadow-card text-center">
-              <div className="text-xs text-muted-foreground font-display">Personal Best</div>
-              <div className="text-2xl font-display font-bold tabular-nums">{highScore}</div>
+            <div className="bg-card rounded-2xl px-6 py-4 shadow-card text-center">
+              <div className="text-xs text-muted-foreground font-medium">Personal Best</div>
+              <div className="text-3xl font-extrabold tabular-nums text-foreground mt-1">{highScore}</div>
             </div>
           )}
-          <div className="flex gap-3 w-full max-w-[280px]">
+          <div className="flex gap-3 w-full max-w-[300px]">
             <Button variant="game" size="xl" onClick={() => handleStart(false)} className="flex-1">
               Play Solo
             </Button>
@@ -136,7 +138,7 @@ export default function GamePage() {
               variant="outline"
               size="xl"
               onClick={() => handleStart(true)}
-              className="flex-1 border-speed text-speed hover:bg-speed/10"
+              className="flex-1"
             >
               <Swords className="w-5 h-5 mr-1" /> Duel
             </Button>
