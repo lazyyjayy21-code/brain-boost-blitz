@@ -9,7 +9,7 @@ interface Props {
   categoryColor: string;
 }
 
-export default function GameHUD({ score, combo, timeLeft, correct, wrong, categoryColor }: Props) {
+export default function GameHUD({ score, combo, timeLeft, correct, wrong }: Props) {
   const multiplier = combo >= 10 ? 3 : combo >= 5 ? 2 : combo >= 3 ? 1.5 : 1;
 
   return (
@@ -19,17 +19,16 @@ export default function GameHUD({ score, combo, timeLeft, correct, wrong, catego
           key={score}
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 0.2 }}
-          className="text-xl font-display font-bold tabular-nums"
+          className="text-xl font-extrabold tabular-nums text-primary"
         >
           {score}
         </motion.div>
         {combo >= 3 && (
           <motion.div
             key={combo}
-            animate={{ scale: [1, 1.3, 1] }}
+            animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 0.3 }}
-            className="text-sm font-display font-bold px-2 py-0.5 rounded-xl bg-speed/20 text-speed"
-            style={{ boxShadow: '0 0 10px hsl(25 95% 55% / 0.3)' }}
+            className="text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-gold/15 text-gold animate-pulse-gold"
           >
             x{multiplier}
           </motion.div>
@@ -38,14 +37,14 @@ export default function GameHUD({ score, combo, timeLeft, correct, wrong, catego
 
       <div className="flex items-center gap-3 text-sm">
         {timeLeft !== undefined && (
-          <div className="font-display font-bold tabular-nums text-muted-foreground">
+          <div className="font-bold tabular-nums text-muted-foreground">
             {timeLeft}s
           </div>
         )}
         <div className="flex items-center gap-1">
-          <span className="text-language font-display font-semibold">{correct}</span>
+          <span className="text-success font-bold">{correct}</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-destructive font-display font-semibold">{wrong}</span>
+          <span className="text-destructive font-bold">{wrong}</span>
         </div>
       </div>
     </div>

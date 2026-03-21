@@ -2,94 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
-    --background: 225 30% 8%;
-    --foreground: 210 40% 92%;
+    --background: 40 20% 98%;
+    --foreground: 235 30% 15%;
 
-    --card: 225 25% 12%;
-    --card-foreground: 210 40% 92%;
-
-    --popover: 225 25% 12%;
-    --popover-foreground: 210 40% 92%;
-
-    --primary: 220 90% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 225 20% 18%;
-    --secondary-foreground: 210 40% 90%;
-
-    --muted: 225 20% 16%;
-    --muted-foreground: 215 20% 55%;
-
-    --accent: 225 20% 18%;
-    --accent-foreground: 210 40% 92%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 225 20% 18%;
-    --input: 225 20% 18%;
-    --ring: 220 90% 60%;
-
-    --radius: 1rem;
-
-    /* NeuroBattle Category Neon Colors */
-    --memory: 270 80% 65%;
-    --logic: 220 90% 60%;
-    --speed: 25 95% 55%;
-    --language: 150 80% 45%;
-    --spatial: 175 80% 45%;
-    --emotional: 340 80% 60%;
-
-    /* Neon glows */
-    --glow-memory: 0 0 20px hsl(270 80% 65% / 0.4);
-    --glow-logic: 0 0 20px hsl(220 90% 60% / 0.4);
-    --glow-speed: 0 0 20px hsl(25 95% 55% / 0.4);
-    --glow-language: 0 0 20px hsl(150 80% 45% / 0.4);
-    --glow-spatial: 0 0 20px hsl(175 80% 45% / 0.4);
-    --glow-emotional: 0 0 20px hsl(340 80% 60% / 0.4);
-
-    /* Shadows */
-    --shadow-card: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 12px -2px rgba(0,0,0,0.4);
-    --shadow-elevated: 0 0 0 1px rgba(255,255,255,0.08), 0 8px 24px -4px rgba(0,0,0,0.5);
-    --shadow-neon: 0 0 30px -5px;
-
-    --sidebar-background: 225 30% 8%;
-    --sidebar-foreground: 210 40% 92%;
-    --sidebar-primary: 220 90% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 225 20% 16%;
-    --sidebar-accent-foreground: 210 40% 92%;
-    --sidebar-border: 225 20% 18%;
-    --sidebar-ring: 220 90% 60%;
-  }
-
-  /* Light mode override - NeuroBattle is dark-first but supports light */
-  .light {
-    --background: 220 20% 96%;
-    --foreground: 225 30% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 225 30% 10%;
+    --card-foreground: 235 30% 15%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 225 30% 10%;
-    --primary: 220 90% 55%;
+    --popover-foreground: 235 30% 15%;
+
+    --primary: 18 100% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 225 25% 15%;
-    --muted: 220 15% 92%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 220 15% 92%;
-    --accent-foreground: 225 30% 10%;
+
+    --secondary: 40 60% 97%;
+    --secondary-foreground: 235 25% 25%;
+
+    --muted: 40 20% 96%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 40 60% 97%;
+    --accent-foreground: 235 30% 15%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 220 90% 55%;
-    --shadow-card: 0 0 0 1px rgba(0,0,0,0.06), 0 4px 8px -2px rgba(0,0,0,0.1);
-    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.06), 0 8px 16px -4px rgba(0,0,0,0.12);
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 40 10% 92%;
+    --input: 40 10% 92%;
+    --ring: 18 100% 60%;
+
+    --radius: 1.25rem;
+
+    /* Category warm colors */
+    --memory: 280 60% 55%;
+    --logic: 220 70% 55%;
+    --speed: 18 100% 60%;
+    --language: 142 60% 42%;
+    --spatial: 175 60% 42%;
+    --emotional: 340 75% 55%;
+
+    /* Warm accent extras */
+    --gold: 42 100% 50%;
+    --coral: 15 100% 71%;
+
+    /* Soft shadows */
+    --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.08);
+    --shadow-soft: 0 1px 8px rgba(0, 0, 0, 0.04);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 235 30% 15%;
+    --sidebar-primary: 18 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 40 60% 97%;
+    --sidebar-accent-foreground: 235 30% 15%;
+    --sidebar-border: 40 10% 92%;
+    --sidebar-ring: 18 100% 60%;
   }
 }
 
@@ -100,23 +74,26 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
-  
+
   .text-balance {
     text-wrap: balance;
   }
@@ -138,34 +115,19 @@
   .bg-emotional { background-color: hsl(var(--emotional)); }
 
   /* Category bg with opacity */
-  .bg-memory\/10 { background-color: hsl(var(--memory) / 0.1); }
-  .bg-logic\/10 { background-color: hsl(var(--logic) / 0.1); }
-  .bg-speed\/10 { background-color: hsl(var(--speed) / 0.1); }
-  .bg-language\/10 { background-color: hsl(var(--language) / 0.1); }
-  .bg-spatial\/10 { background-color: hsl(var(--spatial) / 0.1); }
-  .bg-emotional\/10 { background-color: hsl(var(--emotional) / 0.1); }
+  .bg-memory\/10 { background-color: hsl(var(--memory) / 0.08); }
+  .bg-logic\/10 { background-color: hsl(var(--logic) / 0.08); }
+  .bg-speed\/10 { background-color: hsl(var(--speed) / 0.08); }
+  .bg-language\/10 { background-color: hsl(var(--language) / 0.08); }
+  .bg-spatial\/10 { background-color: hsl(var(--spatial) / 0.08); }
+  .bg-emotional\/10 { background-color: hsl(var(--emotional) / 0.08); }
 
-  .bg-memory\/20 { background-color: hsl(var(--memory) / 0.2); }
-  .bg-logic\/20 { background-color: hsl(var(--logic) / 0.2); }
-  .bg-speed\/20 { background-color: hsl(var(--speed) / 0.2); }
-  .bg-language\/20 { background-color: hsl(var(--language) / 0.2); }
-  .bg-spatial\/20 { background-color: hsl(var(--spatial) / 0.2); }
-  .bg-emotional\/20 { background-color: hsl(var(--emotional) / 0.2); }
-
-  /* Neon glow effects */
-  .glow-memory { box-shadow: var(--glow-memory); }
-  .glow-logic { box-shadow: var(--glow-logic); }
-  .glow-speed { box-shadow: var(--glow-speed); }
-  .glow-language { box-shadow: var(--glow-language); }
-  .glow-spatial { box-shadow: var(--glow-spatial); }
-  .glow-emotional { box-shadow: var(--glow-emotional); }
-
-  /* Frosted glass */
-  .glass {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--border) / 0.5);
-  }
+  .bg-memory\/20 { background-color: hsl(var(--memory) / 0.12); }
+  .bg-logic\/20 { background-color: hsl(var(--logic) / 0.12); }
+  .bg-speed\/20 { background-color: hsl(var(--speed) / 0.12); }
+  .bg-language\/20 { background-color: hsl(var(--language) / 0.12); }
+  .bg-spatial\/20 { background-color: hsl(var(--spatial) / 0.12); }
+  .bg-emotional\/20 { background-color: hsl(var(--emotional) / 0.12); }
 
   .scrollbar-hide {
     -ms-overflow-style: none;
