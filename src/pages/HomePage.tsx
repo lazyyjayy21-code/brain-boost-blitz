@@ -5,6 +5,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useMood } from '@/hooks/useMood';
 import { CATEGORIES, GAMES, BRAIN_TYPES, Category } from '@/lib/types';
 import { Flame, Trophy, BarChart3, Swords, Home, Gamepad2, User } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const MOOD_SCALE = [
   { emoji: '😴', label: 'Tired', value: 'tired' },
