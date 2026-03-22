@@ -83,12 +83,15 @@ export default function HomePage() {
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="pt-12 pb-2"
+        className="pt-12 pb-2 flex items-start justify-between"
       >
-        <h1 className="text-[28px] font-extrabold text-foreground leading-tight">
-          {greeting()}, {profile.name} 👋
-        </h1>
-        <p className="text-muted-foreground text-[15px] mt-1">{brainType.label} · Level {profile.level}</p>
+        <div>
+          <h1 className="text-[28px] font-extrabold text-foreground leading-tight">
+            {greeting()}, {profile.name} 👋
+          </h1>
+          <p className="text-muted-foreground text-[15px] mt-1">{brainType.label} · Level {profile.level}</p>
+        </div>
+        <ThemeToggle />
       </motion.div>
 
       {/* XP Progress Ring */}
