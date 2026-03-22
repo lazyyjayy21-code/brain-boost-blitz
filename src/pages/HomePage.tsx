@@ -102,7 +102,7 @@ export default function HomePage() {
       >
         <div className="relative w-32 h-32">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(40, 20%, 93%)" strokeWidth="8" />
+            <circle cx="60" cy="60" r="54" fill="none" className="stroke-muted" strokeWidth="8" />
             <motion.circle
               cx="60" cy="60" r="54" fill="none"
               stroke="hsl(18, 100%, 60%)"
