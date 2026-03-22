@@ -5,6 +5,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useMood } from '@/hooks/useMood';
 import { CATEGORIES, GAMES, BRAIN_TYPES, Category } from '@/lib/types';
 import { Flame, Trophy, BarChart3, Swords, Home, Gamepad2, User } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const MOOD_SCALE = [
   { emoji: '😴', label: 'Tired', value: 'tired' },
@@ -82,12 +83,15 @@ export default function HomePage() {
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="pt-12 pb-2"
+        className="pt-12 pb-2 flex items-start justify-between"
       >
-        <h1 className="text-[28px] font-extrabold text-foreground leading-tight">
-          {greeting()}, {profile.name} 👋
-        </h1>
-        <p className="text-muted-foreground text-[15px] mt-1">{brainType.label} · Level {profile.level}</p>
+        <div>
+          <h1 className="text-[28px] font-extrabold text-foreground leading-tight">
+            {greeting()}, {profile.name} 👋
+          </h1>
+          <p className="text-muted-foreground text-[15px] mt-1">{brainType.label} · Level {profile.level}</p>
+        </div>
+        <ThemeToggle />
       </motion.div>
 
       {/* XP Progress Ring */}
@@ -98,7 +102,7 @@ export default function HomePage() {
       >
         <div className="relative w-32 h-32">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(40, 20%, 93%)" strokeWidth="8" />
+            <circle cx="60" cy="60" r="54" fill="none" className="stroke-muted" strokeWidth="8" />
             <motion.circle
               cx="60" cy="60" r="54" fill="none"
               stroke="hsl(18, 100%, 60%)"
