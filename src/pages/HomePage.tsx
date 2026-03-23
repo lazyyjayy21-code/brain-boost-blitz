@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useMood } from '@/hooks/useMood';
-import { CATEGORIES, GAMES, BRAIN_TYPES, Category } from '@/lib/types';
-import { Flame, Trophy, BarChart3, Swords, Home, Gamepad2, User } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
+import { GAMES, Category } from '@/lib/types';
+import { Flame, Crown, Compass, Trophy, Gamepad2, User, Lock } from 'lucide-react';
 
 const MOOD_SCALE = [
   { emoji: '😴', label: 'Tired', value: 'tired' },
@@ -15,37 +14,39 @@ const MOOD_SCALE = [
   { emoji: '🔥', label: 'On Fire', value: 'fired-up' },
 ];
 
-const CATEGORY_COLORS: Record<string, string> = {
-  memory: 'hsl(280, 60%, 55%)',
-  logic: 'hsl(220, 70%, 55%)',
-  speed: 'hsl(18, 100%, 60%)',
-  language: 'hsl(142, 60%, 42%)',
-  spatial: 'hsl(175, 60%, 42%)',
-  emotional: 'hsl(340, 75%, 55%)',
+const CARD_GRADIENTS: Record<Category, string> = {
+  memory: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
+  logic: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+  speed: 'linear-gradient(135deg, #F97316, #EAB308)',
+  language: 'linear-gradient(135deg, #22C55E, #14B8A6)',
+  spatial: 'linear-gradient(135deg, #6366F1, #3B82F6)',
+  emotional: 'linear-gradient(135deg, #F43F5E, #F97316)',
 };
+
+const FLOATING_SHAPES = [
+  { top: '12%', left: '10%', size: 12, opacity: 0.25 },
+  { top: '18%', right: '14%', size: 8, opacity: 0.2 },
+  { top: '60%', left: '16%', size: 10, opacity: 0.18 },
+  { top: '70%', right: '10%', size: 14, opacity: 0.22 },
+  { top: '30%', left: '80%', size: 6, opacity: 0.15 },
+  { top: '50%', right: '80%', size: 9, opacity: 0.2 },
+];
+
+const DAILY_PUZZLES = [
+  { name: 'Quick Math', icon: '➕', locked: false },
+  { name: 'Word Match', icon: '📝', locked: false },
+  { name: 'Pattern', icon: '🔷', locked: true },
+  { name: 'Memory', icon: '🧩', locked: true },
+  { name: 'Focus', icon: '🎯', locked: true },
+];
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { profile, xpForNextLevel, xpProgress, addMoodEntry } = useUserProfile();
+  const { profile, addMoodEntry } = useUserProfile();
   const { currentMood, moodChecked, selectMood, getMoodInsight } = useMood();
   const [showMoodCheck, setShowMoodCheck] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedMoodEmoji, setSelectedMoodEmoji] = useState<string | null>(null);
-
-  const brainType = BRAIN_TYPES[profile.brainType] || BRAIN_TYPES.strategist;
-  const filteredGames = selectedCategory ? GAMES.filter(g => g.category === selectedCategory) : GAMES;
-
-  const weekDays: { date: string; label: string; active: boolean }[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-    weekDays.push({
-      date: dateStr,
-      label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][d.getDay()],
-      active: !!profile.weeklyActivity[dateStr],
-    });
-  }
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleMoodSelect = (moodValue: string) => {
     selectMood(moodValue);
@@ -60,87 +61,39 @@ export default function HomePage() {
     setShowMoodCheck(false);
   };
 
-  const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  const xpPercent = (xpProgress / xpForNextLevel) * 100;
-  const circumference = 2 * Math.PI * 54;
-  const strokeDashoffset = circumference - (xpPercent / 100) * circumference;
-
-  const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-  const item = {
-    hidden: { opacity: 0, y: 12 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } },
-  };
-
   return (
-    <div className="max-w-md mx-auto px-5 pb-28 bg-background min-h-screen">
-      {/* Greeting */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="pt-12 pb-2 flex items-start justify-between"
-      >
-        <div>
-          <h1 className="text-[28px] font-extrabold text-foreground leading-tight">
-            {greeting()}, {profile.name} 👋
-          </h1>
-          <p className="text-muted-foreground text-[15px] mt-1">{brainType.label} · Level {profile.level}</p>
+    <div className="min-h-screen bg-[#0D0D0D] pb-24">
+      {/* Top Bar */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-2">
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full">
+            <Flame className="w-4 h-4 text-orange-400" />
+            <span className="text-white text-sm font-bold tabular-nums">{profile.streak}</span>
+          </button>
+          <button className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full">
+            <span className="text-yellow-400 text-sm">🪙</span>
+            <span className="text-white text-sm font-bold tabular-nums">{profile.xp}</span>
+          </button>
         </div>
-        <ThemeToggle />
-      </motion.div>
-
-      {/* XP Progress Ring */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center py-6"
-      >
-        <div className="relative w-32 h-32">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="54" fill="none" className="stroke-muted" strokeWidth="8" />
-            <motion.circle
-              cx="60" cy="60" r="54" fill="none"
-              stroke="hsl(18, 100%, 60%)"
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset }}
-              transition={{ duration: 1.2, ease: 'easeOut' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-extrabold tabular-nums text-foreground">{xpProgress}</span>
-            <span className="text-xs text-muted-foreground font-medium">/ {xpForNextLevel} XP</span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Streak Badge */}
-      <div className="flex justify-center mb-4">
-        <div className="inline-flex items-center gap-1.5 bg-primary/8 px-4 py-2 rounded-full">
-          <Flame className="w-4 h-4 text-primary" />
-          <span className="font-bold text-sm text-primary tabular-nums">{profile.streak} day streak</span>
-        </div>
+        <button className="flex items-center gap-1.5 bg-purple-600/80 px-3 py-1.5 rounded-full">
+          <Crown className="w-3.5 h-3.5 text-yellow-300" />
+          <span className="text-white text-xs font-bold">Premium</span>
+        </button>
       </div>
+      <div className="h-px bg-white/8 mx-4" />
 
-      {/* Mood Check-in */}
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        onClick={() => setShowMoodCheck(true)}
-        className="w-full bg-card rounded-2xl p-4 mb-4 shadow-card text-center"
-      >
-        <span className="text-[15px] font-semibold text-muted-foreground">
-          {moodChecked
-            ? `${selectedMoodEmoji || '🙂'} Feeling ${currentMood} — ${getMoodInsight()}`
-            : 'How are you feeling today? Tap to check in'}
-        </span>
-      </motion.button>
+      {/* Mood Check-in (subtle) */}
+      {!moodChecked && (
+        <motion.button
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => setShowMoodCheck(true)}
+          className="mx-4 mt-3 w-[calc(100%-2rem)] bg-white/5 rounded-2xl px-4 py-3 text-center"
+        >
+          <span className="text-white/60 text-sm">How are you feeling? Tap to check in 🧠</span>
+        </motion.button>
+      )}
 
       {/* Mood Modal */}
       <AnimatePresence>
@@ -149,18 +102,18 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm px-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-6"
             onClick={() => setShowMoodCheck(false)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 10 }}
-              className="bg-card rounded-3xl p-7 shadow-elevated w-full max-w-sm"
+              className="bg-[#1A1A2E] rounded-3xl p-7 shadow-elevated w-full max-w-sm border border-white/10"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-extrabold text-xl mb-1 text-center text-foreground">How do you feel?</h3>
-              <p className="text-sm text-muted-foreground mb-6 text-center">We'll recommend the perfect game for you</p>
+              <h3 className="font-extrabold text-xl mb-1 text-center text-white">How do you feel?</h3>
+              <p className="text-sm text-white/50 mb-6 text-center">We'll pick the perfect game for you</p>
               <div className="flex justify-between px-2">
                 {MOOD_SCALE.map(m => (
                   <motion.button
@@ -168,10 +121,10 @@ export default function HomePage() {
                     whileTap={{ scale: 0.85 }}
                     whileHover={{ y: -3 }}
                     onClick={() => handleMoodSelect(m.value)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-primary/5 transition-colors"
+                    className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/5 transition-colors"
                   >
                     <span className="text-4xl">{m.emoji}</span>
-                    <span className="text-[11px] font-medium text-muted-foreground">{m.label}</span>
+                    <span className="text-[11px] font-medium text-white/50">{m.label}</span>
                   </motion.button>
                 ))}
               </div>
@@ -180,105 +133,152 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      {/* Play Now / Duel Button */}
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        onClick={() => {
-          const randomGame = GAMES[Math.floor(Math.random() * GAMES.length)];
-          navigate(`/game/${randomGame.id}`);
-        }}
-        className="w-full rounded-full p-4 mb-6 flex items-center justify-center gap-2 text-primary-foreground font-bold text-lg"
-        style={{ background: 'linear-gradient(135deg, hsl(18, 100%, 60%), hsl(18, 100%, 50%))' }}
-      >
-        <Swords className="w-5 h-5" /> Play Now
-      </motion.button>
+      {/* TODAY'S WORKOUTS */}
+      <div className="px-4 pt-5 pb-3">
+        <h2 className="text-[12px] font-bold text-white/70 uppercase tracking-[2px]">
+          Today's Workouts
+        </h2>
+      </div>
 
-      {/* Category Filter Pills */}
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
-        <button
-          onClick={() => setSelectedCategory(null)}
-          className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-            !selectedCategory ? 'bg-foreground text-background' : 'bg-card shadow-soft text-muted-foreground'
-          }`}
-        >
-          All
-        </button>
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
-            className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              selectedCategory === cat.id
-                ? 'text-primary-foreground'
-                : 'bg-card shadow-soft text-muted-foreground'
+      {/* Game Cards — Horizontal Snap Scroll */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto snap-x snap-mandatory px-4 pb-2 scrollbar-hide"
+      >
+        {GAMES.map((game, i) => {
+          const gradient = CARD_GRADIENTS[game.category];
+          const highScore = profile.gameHighScores[game.id] || 0;
+          return (
+            <motion.div
+              key={game.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05, duration: 0.4 }}
+              className="snap-center shrink-0 w-[calc(100vw-48px)] max-w-[340px]"
+            >
+              <div
+                className="relative rounded-[24px] overflow-hidden h-[320px] flex flex-col items-center justify-between py-6 px-5"
+                style={{ background: gradient }}
+              >
+                {/* Floating decorative shapes */}
+                {FLOATING_SHAPES.map((shape, si) => (
+                  <div
+                    key={si}
+                    className="absolute rounded-full bg-white animate-float"
+                    style={{
+                      top: shape.top,
+                      left: shape.left,
+                      right: shape.right,
+                      width: shape.size,
+                      height: shape.size,
+                      opacity: shape.opacity,
+                      animationDelay: `${si * 0.5}s`,
+                    }}
+                  />
+                ))}
+
+                {/* Category label */}
+                <span className="text-white/70 text-xs font-semibold uppercase tracking-widest">
+                  {game.category === 'emotional' ? 'Emotional IQ' : game.category}
+                </span>
+
+                {/* Big emoji */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-[80px] leading-none drop-shadow-lg">{game.icon}</span>
+                </div>
+
+                {/* Text + Button */}
+                <div className="w-full text-center space-y-2">
+                  <h3 className="text-white font-extrabold text-2xl">{game.name}</h3>
+                  <p className="text-white/70 text-sm leading-snug">{game.description}</p>
+                  {highScore > 0 && (
+                    <p className="text-white/50 text-xs font-semibold">Best: {highScore}</p>
+                  )}
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate(`/game/${game.id}`)}
+                    className="w-full bg-white text-[#0D0D0D] font-bold text-[15px] py-3 rounded-full mt-2 shadow-lg active:bg-white/90 transition-colors"
+                  >
+                    Start
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* DAILY PUZZLES */}
+      <div className="px-4 pt-6 pb-3">
+        <h2 className="text-[12px] font-bold text-white/70 uppercase tracking-[2px]">
+          Daily Puzzles
+        </h2>
+      </div>
+
+      <div className="flex gap-3 overflow-x-auto px-4 pb-4 scrollbar-hide">
+        {DAILY_PUZZLES.map((puzzle, i) => (
+          <motion.button
+            key={puzzle.name}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 + i * 0.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              if (!puzzle.locked) {
+                const randomGame = GAMES[Math.floor(Math.random() * GAMES.length)];
+                navigate(`/game/${randomGame.id}`);
+              }
+            }}
+            className={`shrink-0 w-[100px] rounded-2xl p-4 flex flex-col items-center gap-2 ${
+              puzzle.locked ? 'bg-white/5' : 'bg-white/10'
             }`}
-            style={selectedCategory === cat.id ? { backgroundColor: CATEGORY_COLORS[cat.id] } : undefined}
           >
-            {cat.id === 'emotional' ? 'Emotional IQ' : cat.label}
-          </button>
+            <div className="relative">
+              <span className="text-3xl">{puzzle.icon}</span>
+              {puzzle.locked && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+                  <Lock className="w-4 h-4 text-white/60" />
+                </div>
+              )}
+            </div>
+            <span className={`text-xs font-semibold ${puzzle.locked ? 'text-white/30' : 'text-white/70'}`}>
+              {puzzle.name}
+            </span>
+          </motion.button>
         ))}
       </div>
 
-      {/* Game Grid */}
-      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
-        {filteredGames.map(game => {
-          const highScore = profile.gameHighScores[game.id] || 0;
-          return (
-            <motion.button
-              key={game.id}
-              variants={item}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(`/game/${game.id}`)}
-              className="bg-card rounded-[20px] p-4 text-left shadow-card hover:shadow-elevated transition-shadow"
-            >
-              <span className="text-3xl block mb-3">{game.icon}</span>
-              <div className="font-bold text-[15px] text-foreground leading-tight mb-1">{game.name}</div>
-              <span
-                className="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mb-2 text-primary-foreground"
-                style={{ backgroundColor: CATEGORY_COLORS[game.category] }}
-              >
-                {game.category === 'emotional' ? 'Emotional IQ' : game.category.charAt(0).toUpperCase() + game.category.slice(1)}
-              </span>
-              <div className="text-[12px] text-muted-foreground leading-snug">{game.description}</div>
-              {highScore > 0 && (
-                <div className="mt-2 text-[11px] font-bold tabular-nums text-muted-foreground">
-                  Best: {highScore}
-                </div>
-              )}
-            </motion.button>
-          );
-        })}
-      </motion.div>
-
       {/* Duel Record */}
       {(profile.duelRecord.wins > 0 || profile.duelRecord.losses > 0) && (
-        <div className="mt-4 bg-card rounded-2xl p-3 shadow-card flex items-center justify-center gap-4">
-          <span className="text-sm text-muted-foreground font-medium">Duel Record:</span>
-          <span className="font-bold text-success">{profile.duelRecord.wins}W</span>
-          <span className="text-muted-foreground">—</span>
-          <span className="font-bold text-destructive">{profile.duelRecord.losses}L</span>
+        <div className="mx-4 bg-white/5 rounded-2xl p-3 flex items-center justify-center gap-4">
+          <span className="text-sm text-white/50 font-medium">Duel Record:</span>
+          <span className="font-bold text-green-400">{profile.duelRecord.wins}W</span>
+          <span className="text-white/30">—</span>
+          <span className="font-bold text-red-400">{profile.duelRecord.losses}L</span>
         </div>
       )}
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/50 shadow-elevated">
-        <div className="max-w-md mx-auto flex justify-around py-3">
-          <button onClick={() => navigate('/')} className="flex flex-col items-center gap-0.5 text-primary">
-            <Home className="w-5 h-5" />
-            <span className="text-[11px] font-semibold">Home</span>
-          </button>
-          <button onClick={() => navigate('/leaderboard')} className="flex flex-col items-center gap-0.5 text-muted-foreground">
-            <Trophy className="w-5 h-5" />
-            <span className="text-[11px] font-semibold">Rank</span>
-          </button>
-          <button onClick={() => navigate('/progress')} className="flex flex-col items-center gap-0.5 text-muted-foreground">
-            <BarChart3 className="w-5 h-5" />
-            <span className="text-[11px] font-semibold">Progress</span>
-          </button>
-          <button className="flex flex-col items-center gap-0.5 text-muted-foreground">
-            <User className="w-5 h-5" />
-            <span className="text-[11px] font-semibold">Profile</span>
-          </button>
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0D0D0D] border-t border-white/8">
+        <div className="max-w-md mx-auto flex justify-around py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+          {[
+            { icon: Compass, label: 'Today', route: '/', active: true },
+            { icon: Trophy, label: 'Quests', route: '/leaderboard', active: false },
+            { icon: Crown, label: 'Leagues', route: '/leaderboard', active: false },
+            { icon: Gamepad2, label: 'Games', route: '/', active: false },
+            { icon: User, label: 'Me', route: '/progress', active: false },
+          ].map(tab => (
+            <button
+              key={tab.label}
+              onClick={() => navigate(tab.route)}
+              className="flex flex-col items-center gap-0.5 min-w-[48px]"
+            >
+              <tab.icon className={`w-5 h-5 ${tab.active ? 'text-teal-400' : 'text-white/30'}`} />
+              <span className={`text-[10px] font-semibold ${tab.active ? 'text-teal-400' : 'text-white/30'}`}>
+                {tab.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
